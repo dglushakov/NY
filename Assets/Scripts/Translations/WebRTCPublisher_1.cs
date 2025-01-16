@@ -5,9 +5,10 @@ using UnityEngine.Networking;
 
 public class WebRTCPublisher_1 : MonoBehaviour
 {
-    public string url = "http://localhost:8889/unity1/whip";
-    public int videoWidth = 1280;
-    public int videoHeight = 720;
+
+    string url;
+    int videoWidth = 1280;
+    int videoHeight = 720;
 
     private RTCPeerConnection pc;
     private MediaStream videoStream;
@@ -17,6 +18,8 @@ public class WebRTCPublisher_1 : MonoBehaviour
         pc = new RTCPeerConnection();
         Camera sourceCamera = gameObject.GetComponent<Camera>();
         videoStream = sourceCamera.CaptureStream(videoWidth, videoHeight);
+        url = "http://localhost:8889/" + sourceCamera.tag + "/whip";
+
         foreach (var track in videoStream.GetTracks())
         {
             pc.AddTrack(track);
@@ -59,6 +62,7 @@ public class WebRTCPublisher_1 : MonoBehaviour
         var client = new System.Net.Http.HttpClient();
 
         var task = System.Threading.Tasks.Task.Run(async () => {
+            
             var res = await client.PostAsync(new System.UriBuilder(url).Uri, content);
             res.EnsureSuccessStatusCode();
             return await res.Content.ReadAsStringAsync();
